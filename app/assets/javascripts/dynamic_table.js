@@ -48,9 +48,20 @@ function DynamicTable(options) {
       }
     }
 
-    dynamic_table_new_location = "?" + queries.join("&")
+    var joinChar = this.joinCharForUrl(this.options.base_path);
+    dynamic_table_new_location = joinChar + queries.join("&")
     console.log("setting dynamic_table_new_location = " + dynamic_table_new_location);
     return this.options.base_path + ((queries.length > 0) ? dynamic_table_new_location : "")
+  }
+
+  this.joinCharForUrl = function(url) {
+    var regex = new RegExp("\\\?");
+    if (regex.exec(url) == undefined) {
+      return "?";
+    }
+    else {
+      return "&";
+    }
   }
 
   this.setNewValues = function() {
