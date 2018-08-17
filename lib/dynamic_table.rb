@@ -15,19 +15,28 @@ module DynamicTable
       @view.capture(self, &block) + script_tag
     end
 
-    def text_field_tag(name, *args)
-      @inputs[name] = :text_field
-      @view.text_field_tag(name, @params[name], *args)
+    def text_field_tag(name, options={})
+      options = HashWithIndifferentAccess.new(options)
+      input = {field_type: :text_field, update_on: :keyup}
+      input[:update_on] = options.delete(:update_on) if options[:update_on]
+      @inputs[name] = input
+      @view.text_field_tag(name, @params[name], options)
     end
 
     def select_tag_options_for_select(name, hash)
-      @inputs[name] = :select
-      @view.select_tag(name, @view.options_for_select(hash, @params[name]))
+      @inputs[name] = {field_type: :select}
+      hash = hash.call if hash.is_a?(Proc)
+      @view.select_tag(name, @view.options_for_select(hash, @params[name] || @filters[name]))
+    end
+
+    def check_box_tag(name)
+      @inputs[name] = {field_type: :check_box}
+      @view.check_box_tag(name, "checked", (@params[name] == "true"))
     end
 
     def sort_link_to(title, name)
-      @inputs[name] = :sort_link
-      @view.link_to(title, "#", id: name)
+      @inputs[name] = {field_type: :sort_link}
+      @view.link_to(title, "#", id: "#{name}_sort_link")
     end
 
     def refreshable(name)

@@ -44,6 +44,12 @@ function DynamicTable(options) {
     for (filter in this.options.filters) {
       var param_value = this.new_values[filter];
       if (param_value != this.options.filters[filter]) {
+        if (param_value === true) {
+          param_value = "true"
+        }
+        else if (param_value === false) {
+          param_value = "false"
+        }
         queries.push(filter + "=" + encodeURIComponent(param_value))
       }
     }
@@ -78,22 +84,41 @@ function DynamicTable(options) {
     }
   }
 
-  this.registerTextField = function(self, input_name) {
-    $("#" + input_name).keyup(function (event) {
-      self.new_values[input_name] = event.target.value;
-      self.refresh();
-    })
+  this.registerTextField = function(self, input_name, input_opts) {
+    if (input_opts.update_on == 'keyup') {
+      //console.log('---- registering ' + input_name + ' on keyup')
+      $("#" + input_name).keyup(function (event) {
+        self.new_values[input_name] = event.target.value;
+        self.refresh();
+      })
+    }
+    else if (input_opts.update_on == 'change') {
+      //console.log('---- registering ' + input_name + ' on change')
+      $("#" + input_name).change(function (event) {
+        self.new_values[input_name] = event.target.value;
+        self.refresh();
+      })
+    }
   }
 
-  this.registerSelectField = function(self, input_name) {
+  this.registerSelectField = function(self, input_name, input_opts) {
     $("#" + input_name).change(function (event) {
       self.new_values[input_name] = event.target.value;
       self.refresh();
     })
   }
 
-  this.registerLinkField = function(self, input_name) {
-    $("#" + input_name).click(function (event) {
+  this.registerCheckBoxField = function(self, input_name, input_opts) {
+    $("#" + input_name).change(function (event) {
+      var new_value = $(event.target).is(":checked");
+      console.log("check box change: " + event.target.value)
+      self.new_values[input_name] = new_value;
+      self.refresh();
+    })
+  }
+
+  this.registerLinkField = function(self, input_name, input_opts) {
+    $("#" + input_name + "_sort_link").click(function (event) {
       event.preventDefault();
       console.log("link clicked: " + input_name)
       if (self.new_values.sort_by == input_name) {
@@ -120,16 +145,20 @@ function DynamicTable(options) {
     var self = this;
     this.setNewValues();
     for(var input in options.inputs) {
-      var input_type = options.inputs[input]
-      // console.log("input, input = " + input);
+      var input_opts = options.inputs[input]
+      var input_type = input_opts['field_type']
+      // console.log("input, input = " + input + ' options = ' + JSON.stringify(input_opts));
       if (input_type == 'text_field') {
-        self.registerTextField(self, input);
+        self.registerTextField(self, input, input_opts);
       }
       else if (input_type == "select") {
-        self.registerSelectField(self, input)
+        self.registerSelectField(self, input, input_opts)
+      }
+      else if (input_type == "check_box") {
+        self.registerCheckBoxField(self, input, input_opts)
       }
       else if (input_type == "sort_link") {
-        console.log("link input, input = " + input);
+        console.log("link input, input = " + input, input_opts);
         self.registerLinkField(self, input)
       }
     }
