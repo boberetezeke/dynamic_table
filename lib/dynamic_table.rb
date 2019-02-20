@@ -22,7 +22,7 @@ module DynamicTable
 
     def select_tag_options_for_select(name, hash)
       @inputs[name] = :select
-      @view.select_tag(name, @view.options_for_select(hash, @params[name]))
+      @view.select_tag(name, @view.options_for_select(hash, @params[name] || @filters[name]))
     end
 
     def sort_link_to(title, name)
