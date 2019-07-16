@@ -2,11 +2,12 @@ require_relative 'dynamic_table/engine'
 
 module DynamicTable
   class Table
-    def initialize(view:, base_path:, params:, filters: {})
+    def initialize(view:, base_path:, params:, filters: {}, options: {})
       @view = view
       @base_path = base_path
       @params = params
       @filters = filters
+      @options = options
       @inputs = {}
       @refreshables = []
     end
@@ -37,8 +38,17 @@ module DynamicTable
 
     def script_tag
       ("<script>" +
-        "$(function() { (new DynamicTable(" + dynamic_table_options.to_json + ")).initialize() });" +
+        "$(function() { #{new_dynamic_table}  });" +
       "</script>").html_safe
+    end
+
+    def new_dynamic_table
+      s = "(new DynamicTable(" + dynamic_table_options.to_json + ")).initialize()"
+      if @options[:assign_to]
+        "#{@options[:assign_to]} = #{s}"
+      else
+        return s
+      end
     end
 
     def dynamic_table_options

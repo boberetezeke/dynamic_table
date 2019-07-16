@@ -4,6 +4,8 @@ This gem allows the user to create a dynamic searcable/sortable table without ha
 create extra files and learn extra ways of doing things outside
 of doing regular rails static tables.
 
+## How to use
+
 In order to accomplish this, this gem relies on another gem that you must be using to 
 be able to use this: **turbograft**. Turbograft is a hard fork of the **turbolinks** 
 gem and it allows you to generate a page as normal and replace just parts of it.
@@ -137,4 +139,32 @@ end
 As a result of all of this you have some fairly simple additions to your code and a nice URL for
 sorting and searching (whose param names are up to you).
 
+## Reference
 
+*DynamicTable::Table*
+
+* new(view:, base_path:, params:, filters: {}, options: {})
+
+  **This creates the dynamic table**
+  
+  * view: - the view that contains the table
+  * base_path: - the path for the controller that generates the table data
+  * params: - the params to the controller
+  * filters: - a hash where the keys are the filter symbol and the default value for that filter
+  * options:
+    * assign_to: - a javascript variable to assign to
+    
+  This call yields the newly created instance of the DynamicTable::Table
+  
+* select_tag_options_for_select(symbol, select_options_hash)
+
+  **This is used to create a select that filters the table**
+  
+  * symbol - this should correspond with one of the filter keys supplied in new
+  * select_options_hash - this is passed on to build the select control by using select_tag
+
+* refreshable(name)
+
+  **Use this to indicate which sections of the page will be updated dynamically**
+  
+  * name - a unique name on the page

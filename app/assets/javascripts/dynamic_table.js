@@ -133,5 +133,7 @@ function DynamicTable(options) {
         self.registerLinkField(self, input)
       }
     }
+
+    return this;
   }
 }
