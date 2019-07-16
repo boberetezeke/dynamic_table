@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
   s.name        = 'dynamic_table'
-  s.version     = '0.0.0'
+  s.version     = '0.0.1'
   s.date        = '2010-04-28'
   s.summary     = "Implement a dynamic table while keeping standard controllers"
   s.description = "dynamic table"
